@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  plex:
+    image: plexinc/pms-docker
+    container_name: plex
+    network_mode: bridge
+    environment:
+      - TZ=Europe/Amsterdam
+      - PLEX_CLAIM=$PLEX_CLAIM
+      - ALLOWED_NETWORKS=$ALLOWED_NETWORKS
+      - ADVERTISE_IP=$ADVERTISE_IP
+      - PLEX_UID=0
+      - PLEX_GID=0
+    volumes:
+      - plex_config:/config
+      - plex_transcode:/transcode
+      - $MEDIA_LOCATION:/data
+    ports:
+      - 32400:32400
+    restart: unless-stopped
+
+volumes:
+  plex_config:
+  plex_transcode:

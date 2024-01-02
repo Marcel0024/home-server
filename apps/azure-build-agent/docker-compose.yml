@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  azure-build-agent1:
+    build:
+      context: ./
+      dockerfile: agent.dockerfile
+    container_name: azure-build-agent
+    restart: no
+    environment:
+      - AZP_URL=$AZP_URL
+      - AZP_TOKEN=$AZP_TOKEN
+      - AZP_AGENT_NAME=$AZP_AGENT_NAME Container 1
+      - AZP_POOL=$AZP_POOL
+
+  azure-build-agent2:
+    build:
+      context: ./
+      dockerfile: agent.dockerfile
+    container_name: azure-build-agent
+    restart: no
+    environment:
+      - AZP_URL=$AZP_URL
+      - AZP_TOKEN=$AZP_TOKEN
+      - AZP_AGENT_NAME=$AZP_AGENT_NAME Container 2
+      - AZP_POOL=$AZP_POOL

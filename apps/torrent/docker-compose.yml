@@ -1,0 +1,70 @@
+version: '3.9'
+
+# all ports of the services are via Gluetun. Ports are defined in ../vpn
+
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    network_mode: "container:gluetun"
+    environment:
+      - TZ=Europe/Amsterdam
+      - WEBUI_PORT=8080
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - qbittorrent_config:/config
+      - $MEDIA_LOCATION/torrents:/downloads
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    network_mode: "container:gluetun"
+    environment:
+      - TZ=Europe/Amsterdam
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - prowlarr_config:/config
+    restart: unless-stopped
+
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    network_mode: "container:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+    volumes:
+      - radarr_config:/config
+      - radarr_downloads:/downloads
+      - $MEDIA_LOCATION:/movies
+    depends_on:
+      - prowlarr
+    restart: unless-stopped
+
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    network_mode: "container:gluetun"
+    environment:
+      - TZ=Europe/Amsterdam
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - sonarr_config:/config
+      - sonarr_downloads:/downloads
+      - $MEDIA_LOCATION:/tv
+    depends_on:
+      - prowlarr
+    restart: unless-stopped
+
+volumes:
+  qbittorrent_config:
+  prowlarr_config:
+  radarr_config:
+  radarr_downloads:
+  sonarr_config:
+  sonarr_downloads:

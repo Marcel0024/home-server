@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=windscribe
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER=$OPENVPN_USER
+      - OPENVPN_PASSWORD=$OPENVPN_PASSWORD
+      - SERVER_REGIONS=Netherlands,Belgium
+    restart: unless-stopped
+    ports:
+      # qbittorrent
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+      # prowlarr
+      - 9696:9696
+      # radarr
+      - 7878:7878
+      # sonarr
+      - 8989:8989

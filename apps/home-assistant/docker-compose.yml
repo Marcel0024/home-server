@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - homeassistant_config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    privileged: true
+    networks:
+      macvlan:
+        ipv4_address: 192.168.2.242
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+
+volumes:
+  homeassistant_config:
+
+
+networks:
+  macvlan:
+    external: true
