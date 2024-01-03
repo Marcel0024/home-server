@@ -3,7 +3,7 @@
 
 This repo contains documentation of my current setup for my home server running Ubuntu 22.04 on an Intel Nuc.
 
-Notable services
+Services include
 
 * Plex Media Server
 * Radarr, Sonarr, qBittorrent
@@ -13,8 +13,9 @@ Notable services
 * Tailscale
 * Watchtower
 * Grafana + Prometheus for monitoring
+* Portainer
 
-Everything is running in docker except Tailscale.
+Everything is running in docker except Tailscale. All files asumes the local subnet is `192.168.2.0/24` and the gateway is on `192.168.2.100`.
 
 # Install docker
 
@@ -25,9 +26,8 @@ https://docs.docker.com/engine/install/ubuntu/
 # Installing containers apps 
 
 
-The `apps` structure can be copied to `~/apps`
+The `apps` folder can be copied to `~/apps`
 
-## File structure
 
     ~
     ├── data          
@@ -39,14 +39,14 @@ The `apps` structure can be copied to `~/apps`
     └── ...
 
 
-In each folder after providing the `.env` file you can run `docker compose up -d` to bring them to life. 
-
-Pihole/Home Assistant needs to have macvlan network setup first (next chapter)
+In each folder in `apps` after providing the `.env` file you can run `docker compose up -d` to bring them to life. 
 
 ```bash
 docker compose up -d
 docker compose up -d --force-recreate --build
 ```
+
+Pihole/Home Assistant needs to have macvlan network setup first (next chapter)
 
 # macvlan
 
@@ -123,7 +123,9 @@ Install Tailscale according to instructions.
     .
     ├── data                    
     │   ├── torrent          
-    │   ├── media     
+    │   ├── media
+    │   │   ├── movies       
+    │   │   ├── tv       
     ├── apps                    
     │   ├── portainer          
     │   ├── home-assistant          
@@ -154,6 +156,16 @@ Find eth interface: (eno1) `ifconfig` the ip that's the ip of the machine is the
 
 Find gateway: `ip r | grep ^def`
 
+Ping from inside container ` sudo docker exec -ti pihole ping -c 4 google.com`
+
+Use all available space for LVM group
+
+```bash
+sudo lvextend -r -L +150g ubuntu-vg/ubuntu-lv
+sudo lvextend -r -l +100%FREE ubuntu-vg/ubuntu-lv
+```
+
+`nmap 192.168.2.243` to see network stuff
 
 # Mount harddrive
 

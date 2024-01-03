@@ -2,6 +2,8 @@ version: '3.9'
 
 services:
   azure-build-agent1:
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
     build:
       context: ./
       dockerfile: agent.dockerfile
@@ -14,6 +16,8 @@ services:
       - AZP_POOL=$AZP_POOL
 
   azure-build-agent2:
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
     build:
       context: ./
       dockerfile: agent.dockerfile
