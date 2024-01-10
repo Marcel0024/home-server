@@ -27,6 +27,8 @@ services:
       - "1883:1883"
       - "9001:9001"
     command: "mosquitto -c /mosquitto-no-auth.conf"
+    depends_on:
+      - homeassistant
 
   zigbee2mqtt:
     container_name: zigbee2mqtt
