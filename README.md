@@ -15,7 +15,7 @@ Services include
 * Prometheus, Grafana for monitoring
 * Portainer
 
-Everything is containerized in Docker, and it assumes that the local subnet is 192.168.2.0/24, with the gateway located at 192.168.2.100 and the network interface named eno1.
+Everything is containerized in Docker, and it assumes that the local subnet is 192.168.2.0/24, with the gateway located at 192.168.2.254 and the network interface named eno1.
 
 # Install docker
 
@@ -44,52 +44,36 @@ docker compose up -d
 docker compose up -d --force-recreate --build
 ```
 
-Pihole/Home Assistant needs to have macvlan network setup first (next chapter)
+Pihole/Home Assistant needs to have their IP addresses setup first (next chapter).
 
-# Macvlan
+# Add extra IP addresses to Host
 
-The macvlan is declared with `192.168.2.240/28` making IP's `.240` to `.254` available to assign. Make sure the router does not assign IP's above .240.
-Current hosts on the macvlan:
+We can add multiple addresses to our network interface. Make sure the router does not assign IP's above these IP's. Currently we have these hardcoded IP addresses:
 
-| IP            | Name           |
-| ------------- | -------------- |
-| 192.168.2.242 | Home Assistant |
-| 192.168.2.243 | Pihole         |
-| 192.168.2.244 | Unbound        |
-| 192.168.2.254 | Nuc/Host       |
+| IP            | Name           | Domain       |
+| ------------- | -------------- | ------------ |
+| 192.168.2.253 | Pihole         | pihole.local |
+| 192.168.2.252 | Unbound        |              |
+| 192.168.2.251 | Home Assistant | home.local   |
 
 
-### Creating the macvlan
+### Adding the IP address
 
-Make sure promiscuous mode is on our parent interface: `sudo ip link set eno1 promisc on`
+We have to create a file that we can call on boot to always add these IP addresses.
 
-```bash
-docker network create -d macvlan -o parent=eno1 \
-  --subnet 192.168.2.0/24 \
-  --gateway 192.168.2.100 \
-  --ip-range 192.168.2.240/28 \
-  --aux-address="nuc=192.168.2.254" \
-macvlan
-```
-
-### Enable docker to host communication over macvlan
-
-So the idea is to create a second macvlan on the host with the same subnet and give the Host an IP (Defined above in the aux-address). And make sure it's there on boot.
-
-1. Create file `sudo nano ~/scripts/macvlan.sh`
+1. Create file `sudo nano ~/scripts/extra-ips.sh`
 
 ```bash 
 #!/usr/bin/env bash
-ip link add macvlan-shim link eno1 type macvlan mode bridge
-ip addr add 192.168.2.254/28 dev macvlan-shim
-ip link set macvlan-shim up
-ip route add 192.168.2.240/28 dev macvlan-shim
-ifconfig macvlan-shim
+ip addr add 192.168.2.253/24 dev eno1
+ip addr add 192.168.2.252/24 dev eno1
+ip addr add 192.168.2.251/24 dev eno1
+ip addr add 192.168.2.250/24 dev eno1
 ```
 
-`sudo chmod +x ~/scripts/macvlan.sh`
+`sudo chmod +x ~/scripts/extra-ips.sh`
 
-1. Create file `sudo nano /etc/systemd/system/macvlan.service`
+1. Create file `sudo nano /etc/systemd/system/extra-ips.service`
 
 ```bash
 #!/usr/bin/env bash
@@ -97,14 +81,14 @@ ifconfig macvlan-shim
 After=network.target
 
 [Service]
-ExecStart=~/scripts/macvlan.sh          # REPLACE ~ WITH REAL PATH 
+ExecStart=~/scripts/extra-ips.sh          # REPLACE ~ WITH REAL PATH 
 
 [Install]
 WantedBy=default.target
 ```
 
-Enable the service with `sudo systemctl enable macvlan`
-Debug with `sudo systemctl status macvlan`
+Enable the service with `sudo systemctl enable extra-ips`
+Debug with `sudo systemctl status extra-ips`
 
 
 Then `sudo reboot`

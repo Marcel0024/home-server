@@ -8,9 +8,8 @@ services:
       - homeassistant_config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
-    networks:
-      macvlan:
-        ipv4_address: 192.168.2.242
+    ports:
+      - "192.168.2.251:80:8123"
     restart: unless-stopped
 
   mosquitto:
@@ -48,8 +47,3 @@ services:
 
 volumes:
   homeassistant_config:
-
-
-networks:
-  macvlan:
-    external: true

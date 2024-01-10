@@ -1,58 +1,46 @@
-version: '3.9'
+version: '3.8'
 
 services:
   unbound:
     container_name: unbound
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
     image: pedantic/unbound:latest
-    expose:
-      - 53
-    networks:
-      macvlan:
-        ipv4_address: 192.168.2.244
     volumes:
-      - unbound:/opt/unbound/etc/unbound
-    restart: unless-stopped
-
+     - unbound:/opt/unbound/etc/unbound
+    ports:
+     - "192.168.2.252:53:53/udp"
+     - "192.168.2.252:53:53/tcp"
+    restart: always
+    
   pihole:
     container_name: pihole
-    hostname: pihole
     image: pihole/pihole:latest
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
-    networks:
-      macvlan:
-        ipv4_address: 192.168.2.243
-    expose:
-      - 80
-      - 53
-      - 67
     environment:
       - TZ=Europe/Amsterdam
-      - FTLCONF_LOCAL_IPV4=192.168.2.243
+      - FTLCONF_LOCAL_IPV4=192.168.2.253
       - WEBPASSWORD=$WEBPASSWORD
       - IPv6=False
       - WEB_PORT=80
-      - PIHOLE_DNS_=192.168.2.244
+      - PIHOLE_DNS_=192.168.2.252
     volumes:
       - pihole:/etc/pihole/
       - pihole_dnsmasq:/etc/dnsmasq.d/
-    dns:
-      - 127.0.0.1
-      - 1.1.1.1
-    mac_address: 02:42:C0:A8:02:96
     cap_add:
       - NET_ADMIN
-    restart: unless-stopped
+    ports:
+      - "192.168.2.253:53:53/tcp"
+      - "192.168.2.253:53:53/udp"
+      - "192.168.2.253:80:80/tcp"
+    restart: always
     depends_on:
       - unbound
-
+    
 volumes:
   pihole:
-  pihole_dnsmasq:
+  pihole_dnsmasq: 
+  unbound:
 
 
-networks:
-  macvlan:
-    external: true
-  bridge:
-    external: true
