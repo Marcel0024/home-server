@@ -109,18 +109,11 @@ Debug with `sudo systemctl status macvlan`
 Then `sudo reboot`
 
 
-# Tailscale
-
-Tailscale is used as VPN to access the local network when not home.
-Install Tailscale according to instructions.
-
- `sudo tailscale up --advertise-exit-node --advertise-routes=192.168.2.0/24`
-
 # Media
 
-### filstructure
+### filestructure
     
-    .
+    ~
     ├── data                    
     │   ├── torrent          
     │   ├── media
