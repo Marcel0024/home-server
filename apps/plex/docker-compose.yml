@@ -4,7 +4,6 @@ services:
   plex:
     image: plexinc/pms-docker
     container_name: plex
-    network_mode: bridge
     environment:
       - TZ=Europe/Amsterdam
       - PLEX_CLAIM=$PLEX_CLAIM
