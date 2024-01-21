@@ -9,8 +9,6 @@ services:
       - PLEX_CLAIM=$PLEX_CLAIM
       - ALLOWED_NETWORKS=$ALLOWED_NETWORKS
       - ADVERTISE_IP=$ADVERTISE_IP
-      - PLEX_UID=0
-      - PLEX_GID=0
     volumes:
       - plex_config:/config
       - plex_transcode:/transcode
