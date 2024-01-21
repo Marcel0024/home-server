@@ -61,6 +61,17 @@ services:
       - prowlarr
     restart: unless-stopped
 
+  overseerr:
+    image: sctx/overseerr
+    container_name: overseerr
+    network_mode: "container:gluetun"
+    environment:
+      - TZ=Europe/Amsterdam
+      - PORT=5055
+    volumes:
+      - overseerr_config:/app/config
+    restart: unless-stopped
+
 volumes:
   qbittorrent_config:
   prowlarr_config:

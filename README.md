@@ -50,11 +50,12 @@ Pihole/Home Assistant needs to have their IP addresses setup first (next chapter
 
 We can add multiple addresses to our network interface. Make sure the router does not assign IP's above these IP's. Currently we have these hardcoded IP addresses:
 
-| IP            | Name           | Domain       |
+| IP            | App            | Domain       |
 | ------------- | -------------- | ------------ |
-| 192.168.2.253 | Pihole         | pihole.local |
+| 192.168.2.253 | Pi-Hole        | pihole.local |
 | 192.168.2.252 | Unbound        |              |
 | 192.168.2.251 | Home Assistant | home.local   |
+| 192.168.2.250 | Overseerr      | stream.local |
 
 
 ### Adding the IP address
