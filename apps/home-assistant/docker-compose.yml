@@ -10,6 +10,9 @@ services:
       - /run/dbus:/run/dbus:ro
     ports:
       - "192.168.2.251:80:8123"
+      # For localtuya
+      - "6666:6666/udp"
+      - "6667:6667/udp"
     restart: unless-stopped
 
   mosquitto:
