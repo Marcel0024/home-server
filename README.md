@@ -6,14 +6,12 @@ This repo contains documentation of my current setup for my home server running 
 Services include
 
 * Plex Media Server
-* Radarr, Sonarr, Prowlarr & qBittorrent
+* Radarr, Sonarr, Prowlarr, Overseerr & qBittorrent
 * Home Assistant, Mosquitto, Zigbee2MQTT 
 * Pi-hole & Unbound
 * Azure Self Hosted Build Agent 
 * Tailscale, Gluetun
-* Watchtower
-* Prometheus, Grafana for monitoring
-* Portainer
+* Portainer, Watchtower & Glances
 
 Everything is containerized in Docker, and it assumes that the local subnet is 192.168.2.0/24, with the gateway located at 192.168.2.254 and the network interface named eno1.
 
@@ -44,7 +42,7 @@ docker compose up -d
 docker compose up -d --force-recreate --build
 ```
 
-Pihole/Home Assistant needs to have their IP addresses setup first (next chapter).
+Pihole, Home Assistant, Overseerr & Glances needs to have their IP addresses setup first (next chapter).
 
 # Add extra IP addresses to Host
 
@@ -56,6 +54,7 @@ We can add multiple addresses to our network interface. Make sure the router doe
 | 192.168.2.252 | Unbound        |              |
 | 192.168.2.251 | Home Assistant | home.local   |
 | 192.168.2.250 | Overseerr      | stream.local |
+| 192.168.2.249 | Glances        | stats.local  |
 
 
 ### Adding the IP address
@@ -70,6 +69,7 @@ ip addr add 192.168.2.253/24 dev eno1
 ip addr add 192.168.2.252/24 dev eno1
 ip addr add 192.168.2.251/24 dev eno1
 ip addr add 192.168.2.250/24 dev eno1
+ip addr add 192.168.2.249/24 dev eno1
 ```
 
 `sudo chmod +x ~/scripts/extra-ips.sh`
