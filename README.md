@@ -12,6 +12,7 @@ Services include
 * Azure Self Hosted Build Agent 
 * Tailscale, Gluetun
 * Portainer, Watchtower & Glances
+* Ollama (LLM) & Open WebUI
 
 Everything is containerized in Docker, and it assumes that the local subnet is 192.168.2.0/24, with the gateway located at 192.168.2.254 and the network interface named eno1.
 
@@ -55,6 +56,7 @@ We can add multiple addresses to our network interface. Make sure the router doe
 | 192.168.2.251 | Home Assistant | home.local   |
 | 192.168.2.250 | Overseerr      | stream.local |
 | 192.168.2.249 | Glances        | stats.local  |
+| 192.168.2.248 | Open WebUI (Ollama)        | chat.local  |
 
 
 ### Adding the IP address
@@ -70,6 +72,7 @@ ip addr add 192.168.2.252/24 dev eno1
 ip addr add 192.168.2.251/24 dev eno1
 ip addr add 192.168.2.250/24 dev eno1
 ip addr add 192.168.2.249/24 dev eno1
+ip addr add 192.168.2.248/24 dev eno1
 ```
 
 `sudo chmod +x ~/scripts/extra-ips.sh`
