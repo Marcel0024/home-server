@@ -7,7 +7,7 @@ Services include
 
 * Plex Media Server
 * Radarr, Sonarr, Prowlarr, Overseerr & qBittorrent
-* Home Assistant, Mosquitto, Zigbee2MQTT 
+* Home Assistant, Mosquitto, Zigbee2MQTT & Cloudflared
 * Pi-hole & Unbound
 * Azure Self Hosted Build Agent 
 * Tailscale, Gluetun
