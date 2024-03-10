@@ -3,13 +3,27 @@ version: '3.9'
 # all ports of the services are via Gluetun. Ports are defined in ../vpn
 
 services:
+  sabnzbd:
+    container_name: sabnzbd
+    image: ghcr.io/hotio/sabnzbd:latest
+    network_mode: "container:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+    volumes:
+      - sabnzbd_config:/config
+      - $MEDIA_LOCATION/usenet:/downloads
+      - $MEDIA_LOCATION/usenet/incomplete:/incomplete-downloads
+    restart: unless-stopped
+
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     network_mode: "container:gluetun"
     environment:
       - TZ=Europe/Amsterdam
-      - WEBUI_PORT=8080
+      - WEBUI_PORT=8081
       - PUID=1000
       - PGID=1000
     volumes:

@@ -105,6 +105,7 @@ Then `sudo reboot`
     ~
     ├── data                    
     │   ├── torrent          
+    │   ├── usenet          
     │   ├── media
     │   │   ├── movies       
     │   │   ├── tv       
@@ -116,10 +117,15 @@ Then `sudo reboot`
     │   └── ...                
     └── ...
 
-Torrents download to `~/data/torrent`    
+Torrents downloads to `~/data/torrent`    
+Usenet downloads to `~/data/torrent`    
 Plex has access to `~/data/media`    
 
-The setup requires remote path mappings on Radarr and Sonarr's download client. From remote path  `/download` to local path `/movies/torrents`
+The setup requires remote path mappings on Radarr and Sonarr's download client. 
+
+**Torrent**: From remote path  `/download` to local path `/movies/torrents`
+
+**Usenet**: From remote path `/config/Downloads/complete/` to local path `/movies/usenet`
 
 # Start Automatically When a Power Source is Connected
 

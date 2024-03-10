@@ -24,6 +24,7 @@ services:
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
+    hostname: gluetun
     cap_add:
       - NET_ADMIN
     environment:
@@ -34,8 +35,10 @@ services:
       - SERVER_REGIONS=Netherlands,Belgium
     restart: always
     ports:
+      # sabnzbd
+      - "8080:8080"    
       # qbittorrent
-      - "8080:8080"
+      - "8081:8081"
       - "6881:6881"
       - "6881:6881/udp"
       # prowlarr
@@ -46,3 +49,6 @@ services:
       - "8989:8989"
       # overseerr
       - "192.168.2.250:80:5055"
+
+volumes:
+  tailscaledata:
