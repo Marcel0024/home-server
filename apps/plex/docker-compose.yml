@@ -4,6 +4,7 @@ services:
   plex:
     image: plexinc/pms-docker
     container_name: plex
+    hostname: Nuc
     environment:
       - TZ=Europe/Amsterdam
       - PLEX_CLAIM=$PLEX_CLAIM
@@ -14,8 +15,11 @@ services:
       - plex_transcode:/transcode
       - $MEDIA_LOCATION:/data
     ports:
-      - 32400:32400
-    restart: unless-stopped
+      - "32400:32400/tcp"
+      - "32469:32469/tcp"
+    devices:
+     - /dev/dri:/dev/dri
+    restart: always
 
 volumes:
   plex_config:
