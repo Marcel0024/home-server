@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   plex:
     image: plexinc/pms-docker
@@ -18,9 +16,25 @@ services:
       - "32400:32400/tcp"
       - "32469:32469/tcp"
     devices:
-     - /dev/dri:/dev/dri
+     - /dev/dri:/dev/dri 
     restart: always
+    
+  kavita:
+    image: lscr.io/linuxserver/kavita:latest
+    container_name: kavita
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+    volumes:
+      - kavita_config:/config
+      - $MEDIA_LOCATION/books:/data
+    ports:
+      - "192.168.2.246:80:5000"
+    restart: unless-stopped
 
 volumes:
   plex_config:
   plex_transcode:
+  kavita_config:
+  

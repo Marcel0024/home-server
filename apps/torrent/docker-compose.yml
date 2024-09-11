@@ -9,10 +9,11 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Amsterdam
+      - HAS_IPV6=false
     volumes:
       - sabnzbd_config:/config
-      - $MEDIA_LOCATION/usenet:/downloads
-      - $MEDIA_LOCATION/usenet/incomplete:/incomplete-downloads
+      - $MEDIA_LOCATION/usenet:/config/Downloads/complete
+      - $MEDIA_LOCATION/usenet/incomplete:/config/Downloads/incomplete
     restart: unless-stopped
 
   qbittorrent:
@@ -73,6 +74,22 @@ services:
       - prowlarr
     restart: unless-stopped
 
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    network_mode: "container:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+    volumes:
+      - readarr_config:/config
+      - readarr_books:/books
+      - $MEDIA_LOCATION:/downloads
+    depends_on:
+      - prowlarr
+    restart: unless-stopped
+    
   overseerr:
     image: sctx/overseerr
     container_name: overseerr
@@ -91,3 +108,7 @@ volumes:
   radarr_downloads:
   sonarr_config:
   sonarr_downloads:
+  readarr_config:
+  readarr_books:
+  overseerr_config:
+  sabnzbd_config:

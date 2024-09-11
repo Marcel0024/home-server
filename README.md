@@ -58,6 +58,7 @@ We can add multiple addresses to our network interface. Make sure the router doe
 | 192.168.2.249 | Glances               | stats.local  |
 | 192.168.2.248 | ~~Open WebUI (Ollama)~~ | ~~chat.local~~ |
 | 192.168.2.247 | Bar Assistant         | bar.local    |
+| 192.168.2.246 | Kavita                | kavita.local |
 
 
 ### Adding the IP address
