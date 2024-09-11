@@ -1,0 +1,12 @@
+services:
+  registry:
+    image: registry:2
+    container_name: docker-registry
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    volumes:
+      - docker-registry-data:/var/lib/registry
+      
+volumes:
+  docker-registry-data:      

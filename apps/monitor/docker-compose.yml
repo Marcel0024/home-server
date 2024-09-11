@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   portainer:
     image: portainer/portainer-ce
@@ -11,22 +9,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-    environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_SCHEDULE=0 0 6 * * *
-      - TZ=Europe/Amsterdam
-
+      
   glances:
-    image: nicolargo/glances:latest-full
+    image: nicolargo/glances
     container_name: glances
-    restart: unless-stopped
+    restart: always
     hostname: Nuc
     ports:
       - "192.168.2.249:80:61208"
@@ -37,6 +24,33 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock:ro
     pid: host
+    
+  watchtower:
+    image: ghcr.io/containrrr/watchtower:latest
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCOPE=none
+      - WATCHTOWER_SCHEDULE=0 0 6 * * *
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - TZ=Europe/Amsterdam
+        
+  watchtower_local:
+    image: ghcr.io/containrrr/watchtower:latest
+    container_name: watchtower-local 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=30
+      - WATCHTOWER_SCOPE=local
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - TZ=Europe/Amsterdam
+       
 
 volumes:
   portainer_data:
