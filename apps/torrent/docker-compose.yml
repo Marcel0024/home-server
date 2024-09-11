@@ -1,5 +1,3 @@
-version: '3.9'
-
 # all ports of the services are via Gluetun. Ports are defined in ../vpn
 
 services:

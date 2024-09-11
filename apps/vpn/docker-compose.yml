@@ -1,11 +1,7 @@
-version: '3.9'
-
 services:
   tailscale:
     image: tailscale/tailscale
     container_name: tailscale
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
     restart: always
     network_mode: host
     cap_add:
