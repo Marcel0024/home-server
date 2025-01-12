@@ -1,4 +1,3 @@
-
 # Loads default set of integrations. Do not remove.
 default_config:
 
@@ -10,16 +9,67 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
+bluetooth:
+
+alarm_control_panel:
+  - platform: manual
+    name: Alarm
+    arming_time: 10
+    code_arm_required: false
+
 notify:
   - platform: group
     name: "Everyone"
     services:
-      - service: mobile_app_x_android
-      - service: mobile_app_x_android
-      
+      - service: mobile_app_x1_android
+      - service: mobile_app_x2_android
+      - service: mobile_app_tablet
+
 http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.20.0.1
   ip_ban_enabled: true
   login_attempts_threshold: 10
+
+light:
+  - platform: template
+    lights:
+      template_woonkamer_lampen:
+        friendly_name: "Template Woonkamer lampen"
+        level_template: >
+          {% set group = 'light.woonkamer_groep' %}
+          {{
+            expand(group) 
+              | selectattr('attributes.brightness', 'defined')
+              | selectattr('attributes.brightness')
+              | map(attribute='attributes.brightness')
+              | average(default=0)
+          }}
+        value_template: "{{ is_state('light.woonkamer_groep', 'on') }}"
+        turn_on:
+          - service: light.turn_on
+            target:
+              entity_id: light.woonkamer_groep
+        turn_off:
+          - service: light.turn_off
+            target:
+              entity_id: light.woonkamer_groep
+        set_level:
+          - variables:
+              group: light.woonkamer_groep
+              on_with_br: >
+                {{
+                  expand(group) 
+                    | selectattr('attributes.brightness', 'defined')
+                    | selectattr('attributes.brightness')
+                    | map(attribute='entity_id')
+                    | list
+                }}
+          - if: "{{ on_with_br | count > 0 or is_state(group, 'off') }}"
+            then:
+              - service: light.turn_on
+                target:
+                  entity_id: "{{ on_with_br or group }}"
+                data:
+                  brightness: "{{ brightness }}"

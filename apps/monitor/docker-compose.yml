@@ -18,7 +18,7 @@ services:
     ports:
       - "192.168.2.249:80:61208"
     environment:
-      - TZ=Europe/Amsterdam
+      - TZ=urope/Brussels
       - GLANCES_OPT=-w
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -36,11 +36,13 @@ services:
       - WATCHTOWER_SCOPE=none
       - WATCHTOWER_SCHEDULE=0 0 6 * * *
       - WATCHTOWER_INCLUDE_STOPPED=true
-      - TZ=Europe/Amsterdam
+      - TZ=Europe/Brussels
         
   watchtower_local:
     image: ghcr.io/containrrr/watchtower:latest
     container_name: watchtower-local 
+    labels:
+      - "com.centurylinklabs.watchtower.scope=local"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
@@ -49,7 +51,7 @@ services:
       - WATCHTOWER_POLL_INTERVAL=30
       - WATCHTOWER_SCOPE=local
       - WATCHTOWER_INCLUDE_STOPPED=true
-      - TZ=Europe/Amsterdam
+      - TZ=Europe/Brussels
        
 
 volumes:

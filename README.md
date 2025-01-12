@@ -49,16 +49,19 @@ Pihole, Home Assistant, Overseerr & Glances needs to have their IP addresses set
 
 We can add multiple addresses to our network interface. Make sure the router does not assign IP's above these IP's. Currently we have these hardcoded IP addresses:
 
-| IP            | App                   | Domain       |
-| ------------- | --------------------- | ------------ |
-| 192.168.2.253 | Pi-Hole               | pihole.local |
-| 192.168.2.252 | Unbound               |              |
-| 192.168.2.251 | Home Assistant        | home.local   |
-| 192.168.2.250 | Overseerr             | stream.local |
-| 192.168.2.249 | Glances               | stats.local  |
-| 192.168.2.248 | ~~Open WebUI (Ollama)~~ | ~~chat.local~~ |
-| 192.168.2.247 | Bar Assistant         | bar.local    |
-| 192.168.2.246 | Kavita                | kavita.local |
+| IP            | App                 | Domain       |
+| ------------- | ------------------- | ------------ |
+| 192.168.2.253 | Pi-Hole             | pihole.local |
+| 192.168.2.252 | Unbound             |              |
+| 192.168.2.251 | Home Assistant      | home.local   |
+| 192.168.2.250 | Overseerr           | stream.local |
+| 192.168.2.249 | Glances             | stats.local  |
+| 192.168.2.248 | Stirling PDF        | pdf.local    |
+| 192.168.2.247 | Bar Assistant       | bar.local    |
+| 192.168.2.246 | NextCloud           | cloud.local  |
+| 192.168.2.245 | Nginx Proxy Manager | npm.local    |
+
+You can add these local DNS records in pi-hole.
 
 
 ### Adding the IP address
@@ -75,6 +78,12 @@ ip addr add 192.168.2.251/24 dev eno1
 ip addr add 192.168.2.250/24 dev eno1
 ip addr add 192.168.2.249/24 dev eno1
 ip addr add 192.168.2.248/24 dev eno1
+ip addr add 192.168.2.247/24 dev eno1
+ip addr add 192.168.2.246/24 dev eno1
+ip addr add 192.168.2.245/24 dev eno1
+ip addr add 192.168.2.244/24 dev eno1
+ip addr add 192.168.2.243/24 dev eno1
+ip addr add 192.168.2.242/24 dev eno1
 ```
 
 `sudo chmod +x ~/scripts/extra-ips.sh`

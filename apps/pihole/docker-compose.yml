@@ -2,7 +2,7 @@ services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    hostname: Nuc  
+    hostname: Nuc
     environment:
       - TZ=Europe/Amsterdam
       - FTLCONF_LOCAL_IPV4=192.168.2.253
@@ -25,15 +25,15 @@ services:
     container_name: unbound
     image: pedantic/unbound:latest
     volumes:
-     - unbound:/opt/unbound/etc/unbound
+      - unbound:/opt/unbound/etc/unbound
     ports:
-     - "192.168.2.252:53:53/udp"
-     - "192.168.2.252:53:53/tcp"
+      - "192.168.2.252:53:53/udp"
+      - "192.168.2.252:53:53/tcp"
     restart: always
-    
+
 volumes:
   pihole:
-  pihole_dnsmasq: 
+  pihole_dnsmasq:
   unbound:
 
 

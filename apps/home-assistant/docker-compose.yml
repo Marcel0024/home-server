@@ -1,23 +1,25 @@
-version: '3.9'
-
 services:
   homeassistant:
     container_name: homeassistant
     image: "ghcr.io/home-assistant/home-assistant:stable"
+    privileged: true
     volumes:
       - homeassistant_config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
     ports:
       - "192.168.2.251:80:8123"
-      # For localtuya
       - "6666:6666/udp"
       - "6667:6667/udp"
     restart: unless-stopped
-
+    
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto:latest
+    deploy:
+      resources:
+        limits:
+          memory: 125M
     environment:
       - TZ=Europe/Amsterdam
     volumes:
@@ -31,7 +33,7 @@ services:
     command: "mosquitto -c /mosquitto-no-auth.conf"
     depends_on:
       - homeassistant
-
+        
   zigbee2mqtt:
     container_name: zigbee2mqtt
     image: koenkk/zigbee2mqtt:1.34.0
@@ -47,15 +49,16 @@ services:
     restart: unless-stopped
     depends_on:
       - mosquitto
-
+      
   cloudflaretunnel:
     container_name: cloudflare-tunnel
     image: cloudflare/cloudflared
+    restart: unless-stopped
     command: tunnel run
     environment:
-      - TUNNEL_TOKEN=$TUNNEL_TOKEN   
+      - TUNNEL_TOKEN=$TUNNEL_TOKEN      
       - TUNNEL_MANAGEMENT_DIAGNOSTICS=false
-    restart: unless-stopped
-
+    
 volumes:
   homeassistant_config:
+ 
