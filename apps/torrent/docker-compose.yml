@@ -74,22 +74,6 @@ services:
       - prowlarr
     restart: unless-stopped
 
-  readarr:
-    image: lscr.io/linuxserver/readarr:develop
-    container_name: readarr
-    network_mode: "container:gluetun"
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Amsterdam
-    volumes:
-      - readarr_config:/config
-      - readarr_books:/books
-      - $MEDIA_LOCATION:/downloads
-    depends_on:
-      - prowlarr
-    restart: unless-stopped
-    
   overseerr:
     image: sctx/overseerr
     container_name: overseerr
