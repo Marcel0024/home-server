@@ -6,13 +6,16 @@ This repo contains documentation of my current setup for my home server running 
 Services include
 
 * Plex Media Server
+* Vaultwarden
+* NextCloud
 * Radarr, Sonarr, Prowlarr, Overseerr & qBittorrent
 * Home Assistant, Mosquitto, Zigbee2MQTT & Cloudflared
 * Pi-hole & Unbound
 * Azure Self Hosted Build Agent 
 * Tailscale, Gluetun
-* Portainer, Watchtower & Glances
-* Ollama (LLM) & Open WebUI
+* Portainer
+* Watchtower & Glances
+* Nginx Proxy Manager
 
 Everything is containerized in Docker, and it assumes that the local subnet is 192.168.2.0/24, with the gateway located at 192.168.2.254 and the network interface named eno1.
 
@@ -59,7 +62,7 @@ We can add multiple addresses to our network interface. Make sure the router doe
 | 192.168.2.248 | Stirling PDF        | pdf.local    |
 | 192.168.2.247 | Bar Assistant       | bar.local    |
 | 192.168.2.246 | NextCloud           | cloud.local  |
-| 192.168.2.245 | Nginx Proxy Manager | npm.local    |
+| 192.168.2.245 | Nginx Proxy Manager | npm.local:81 |
 
 You can add these local DNS records in pi-hole.
 
@@ -120,9 +123,11 @@ Then `sudo reboot`
     │   ├── media
     │   │   ├── movies       
     │   │   ├── tv       
+    │   │   ├── youtube       
     ├── apps                    
     │   ├── portainer          
     │   ├── home-assistant          
+    │   ├── # omitted          
     │   ├── torrent   
     │   │   ├── docker-compose.yml      # containing qbittorrent, radarr, sonarr, etc.          
     │   └── ...                

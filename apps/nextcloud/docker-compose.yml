@@ -22,7 +22,7 @@ services:
     container_name: nextcloud
     restart: unless-stopped
     ports:
-      - 192.168.2.244:80:80
+      - 192.168.2.246:80:80
     depends_on:
       - redis
       - db
