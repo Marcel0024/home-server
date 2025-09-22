@@ -24,15 +24,18 @@ services:
     cap_add:
       - NET_ADMIN
     environment:
+      - TZ=Europe/Brussels
+      - VPN_TYPE=wireguard
       - VPN_SERVICE_PROVIDER=windscribe
-      - VPN_TYPE=openvpn
-      - OPENVPN_USER=$OPENVPN_USER
-      - OPENVPN_PASSWORD=$OPENVPN_PASSWORD
+      - WIREGUARD_PRIVATE_KEY=$WINDSCRIBE_PRIVATEKEY
+      - WIREGUARD_ADDRESSES=$WINDSCRIBE_ADDRESSES
+      - WIREGUARD_PRESHARED_KEY=$WINDSCRIBE_PRESHAREDKEY
+      - WIREGUARD_ENDPOINT_PORT=65142
       - SERVER_REGIONS=Netherlands,Belgium
     restart: always
     ports:
       # sabnzbd
-      - "8080:8080"    
+      - "8080:8080"
       # qbittorrent
       - "8081:8081"
       - "6881:6881"

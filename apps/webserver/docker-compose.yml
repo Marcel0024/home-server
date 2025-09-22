@@ -13,7 +13,7 @@ services:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
     healthcheck:
-      test: ["CMD", "/usr/bin/check-health"]
+      test: [ "CMD", "/usr/bin/check-health" ]
       interval: 10s
       timeout: 3s
       
@@ -21,6 +21,6 @@ services:
     image: localhost:5000/marcel0024/testwebserver:latest
     container_name: testwebserver
     labels: [ "com.centurylinklabs.watchtower.scope=local" ]
-    restart: unless-stopped    
+    restart: unless-stopped
     ports:
       - 5100:8080

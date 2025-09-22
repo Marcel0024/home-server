@@ -20,6 +20,10 @@ services:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     network_mode: "container:gluetun"
+    deploy:
+      resources:
+        limits:
+          memory: 3g
     environment:
       - TZ=Europe/Amsterdam
       - WEBUI_PORT=8081

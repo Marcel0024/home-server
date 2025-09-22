@@ -6,9 +6,9 @@ services:
     environment:
       - TZ=Europe/Amsterdam
       - FTLCONF_LOCAL_IPV4=192.168.2.253
-      - WEBPASSWORD=$WEBPASSWORD
-      - WEB_PORT=80
-      - PIHOLE_DNS_=192.168.2.252
+      - FTLCONF_webserver_api_password=$WEBPASSWORD
+      - FTLCONF_webserver_port=80
+      - FTLCONF_dns_upstreams=192.168.2.252
       - FTL_CMD=no-daemon -- --dns-forward-max 300
     volumes:
       - pihole:/etc/pihole/
@@ -19,17 +19,17 @@ services:
       - "192.168.2.253:53:53/tcp"
       - "192.168.2.253:53:53/udp"
       - "192.168.2.253:80:80/tcp"
-    restart: always
+    restart: unless-stopped
 
   unbound:
     container_name: unbound
-    image: pedantic/unbound:latest
+    image: mvance/unbound:latest
     volumes:
       - unbound:/opt/unbound/etc/unbound
     ports:
       - "192.168.2.252:53:53/udp"
       - "192.168.2.252:53:53/tcp"
-    restart: always
+    restart: unless-stopped
 
 volumes:
   pihole:

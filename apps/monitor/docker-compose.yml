@@ -9,9 +9,26 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-      
+
+  beszel:
+    image: henrygd/beszel
+    container_name: beszel
+    restart: unless-stopped
+    ports:
+      - 8090:8090
+    volumes:
+      - ./beszel_data:/beszel_data
+
+  beszel-agent:
+    image: "henrygd/beszel-agent"
+    container_name: "beszel-agent"
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   glances:
-    image: nicolargo/glances
+    image: nicolargo/glances:latest
     container_name: glances
     restart: always
     hostname: Nuc
@@ -24,7 +41,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock:ro
     pid: host
-    
+
   watchtower:
     image: ghcr.io/containrrr/watchtower:latest
     container_name: watchtower
@@ -34,25 +51,9 @@ services:
     environment:
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCOPE=none
-      - WATCHTOWER_SCHEDULE=0 0 6 * * *
+      - WATCHTOWER_SCHEDULE=0 0 8 * * 6,0
       - WATCHTOWER_INCLUDE_STOPPED=true
       - TZ=Europe/Brussels
-        
-  watchtower_local:
-    image: ghcr.io/containrrr/watchtower:latest
-    container_name: watchtower-local 
-    labels:
-      - "com.centurylinklabs.watchtower.scope=local"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-    environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_POLL_INTERVAL=30
-      - WATCHTOWER_SCOPE=local
-      - WATCHTOWER_INCLUDE_STOPPED=true
-      - TZ=Europe/Brussels
-       
 
 volumes:
   portainer_data:

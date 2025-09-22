@@ -3,13 +3,13 @@ default_config:
 
 # Load frontend themes from the themes folder
 frontend:
-  themes: !include_dir_merge_named themes
+  # themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /hacsfiles/lovelace-card-mod/card-mod.js
 
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
-
-bluetooth:
 
 alarm_control_panel:
   - platform: manual
@@ -30,7 +30,7 @@ http:
   trusted_proxies:
     - 172.20.0.1
   ip_ban_enabled: true
-  login_attempts_threshold: 10
+  login_attempts_threshold: 50
 
 light:
   - platform: template

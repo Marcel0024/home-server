@@ -1,0 +1,45 @@
+services:
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    volumes:
+      - ./ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: "6"
+    restart: unless-stopped
+
+  open-webui:
+    container_name: open-webui
+    image: ghcr.io/open-webui/open-webui:main
+    environment:
+      - TZ=Europe/Amsterdam
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - ENABLE_SIGNUP=true
+      - ENABLE_OAUTH_SIGNUP=true
+      - WEBUI_NAME="My AI"
+      - DEFAULT_MODELS="Azure gpt-4"
+    volumes:
+      - open-webui:/app/backend/data
+    ports:
+      - "192.168.2.244:80:8080"
+    restart: unless-stopped
+
+  mcp-server:
+    container_name: mcpo_mcp-server
+    image: ghcr.io/open-webui/mcpo:main
+    restart: unless-stopped
+    ports:
+      - 9005:8000
+    environment:
+      - TZ=Europe/Amsterdam
+    volumes:
+      - ./mcpo/config.json:/app/config.json:rw
+    command: ["--api-key", "xxx", "--config", "/app/config.json"]
+
+volumes:
+  open-webui:

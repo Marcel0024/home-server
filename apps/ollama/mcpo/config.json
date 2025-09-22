@@ -1,0 +1,19 @@
+{
+    "mcpServers": {
+        "nuc_mcp_server": {
+            "type": "sse",
+            "url": "http://192.168.2.21:5555/sse"
+        },
+        "home_assistant_mcp": {
+            "type": "sse",
+            "url": "http://192.168.2.251/mcp_server/sse",
+            "headers": {
+                "Authorization": "Bearer x"
+            }
+        },
+        "microsoft-docs": {
+            "type": "sse",
+            "url": "https://learn.microsoft.com/api/mcp"
+        }
+    }
+}

@@ -11,8 +11,10 @@ services:
       - "192.168.2.251:80:8123"
       - "6666:6666/udp"
       - "6667:6667/udp"
+    environment:
+      - TZ=Europe/Amsterdam
     restart: unless-stopped
-    
+
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto:latest
@@ -33,10 +35,10 @@ services:
     command: "mosquitto -c /mosquitto-no-auth.conf"
     depends_on:
       - homeassistant
-        
+
   zigbee2mqtt:
     container_name: zigbee2mqtt
-    image: koenkk/zigbee2mqtt:1.34.0
+    image: koenkk/zigbee2mqtt:latest
     volumes:
       - ./zigbee2mqtt-data:/app/data
     devices:
@@ -56,9 +58,75 @@ services:
     restart: unless-stopped
     command: tunnel run
     environment:
-      - TUNNEL_TOKEN=$TUNNEL_TOKEN      
+      - TUNNEL_TOKEN=$TUNNEL_TOKEN
       - TUNNEL_MANAGEMENT_DIAGNOSTICS=false
-    
+
+  faster-whisper:
+    image: rhasspy/wyoming-whisper:latest
+    container_name: faster-whisper
+    environment:
+      - TZ=Etc/Amsterdam
+    volumes:
+      - whisper_config:/config
+    ports:
+      - 10300:10300
+    restart: unless-stopped
+    command: [ "--model", "tiny-int8", "--language", "nl" ]
+
+  piper:
+    image: lscr.io/linuxserver/piper:latest
+    container_name: piper
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/Amsterdam
+      - PIPER_VOICE=nl_NL-mls_5809-low
+    volumes:
+      - piper_config:/config
+    ports:
+      - 10200:10200
+    restart: unless-stopped
+
+  azure-stt-service:
+    container_name: azure-stt-service
+    image: ghcr.io/hugobloem/wyoming-microsoft-stt-noha:latest
+    ports:
+      - 10301:10301
+    environment:
+      - AZURE_SERVICE_REGION=northeurope
+      - AZURE_SUBSCRIPTION_KEY=$AZURE_STT_KEY
+    restart: unless-stopped
+    command: --uri=tcp://0.0.0.0:10301 --language=nl-NL --profanity=off
+
+  azure-tts-service:
+    container_name: azure-tts-service
+    image: ghcr.io/hugobloem/wyoming-microsoft-tts-noha:latest
+    ports:
+      - 10201:10200
+    environment:
+      - AZURE_SERVICE_REGION=northeurope
+      - AZURE_SUBSCRIPTION_KEY=$AZURE_STT_KEY
+    restart: unless-stopped
+    command: --uri=tcp://0.0.0.0:10200 --voice=nl-NL-MaartenNeural
+
+  esphome:
+    image: ghcr.io/esphome/esphome
+    container_name: esphome
+    volumes:
+      - ./esp_home:/config
+    network_mode: host
+    # ports:
+    #   - "6052:6052"
+    # reset: https://esphome.github.io/esp-web-tools/
+
+networks:
+  default:
+    driver: bridge
+
 volumes:
   homeassistant_config:
- 
+  whisper_config:
+  piper_config:
+  openwakeword_data:
+
+

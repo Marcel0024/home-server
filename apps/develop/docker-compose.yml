@@ -1,12 +1,44 @@
 services:
   registry:
-    image: registry:2
+    image: registry:latest
     container_name: docker-registry
     ports:
       - "5000:5000"
     restart: unless-stopped
     volumes:
       - docker-registry-data:/var/lib/registry
-      
+
+  gitea:
+    image: docker.gitea.com/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: unless-stopped
+    volumes:
+      - ./gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "222:22"
+
+  gitea_runner:
+    image: docker.io/gitea/act_runner:latest
+    depends_on:
+      - gitea
+    container_name: gitea_runner
+    environment:
+      CONFIG_FILE: /config.yaml
+      GITEA_INSTANCE_URL: $INSTANCE_URL
+      GITEA_RUNNER_REGISTRATION_TOKEN: $REGISTRATION_TOKEN
+      GITEA_RUNNER_NAME: $RUNNER_NAME
+    restart: unless-stopped
+    volumes:
+      - ./runner-config.yaml:/config.yaml
+      - runner_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock        
+
 volumes:
-  docker-registry-data:      
+  docker-registry-data:
+  runner_data:
