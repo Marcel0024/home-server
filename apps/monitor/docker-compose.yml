@@ -42,18 +42,19 @@ services:
       - /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock:ro
     pid: host
 
-  watchtower:
-    image: ghcr.io/containrrr/watchtower:latest
-    container_name: watchtower
+  whatsupdocker:
+    image: getwud/wud
+    container_name: wud
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
+    ports:
+      - 5050:3000
     environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_SCOPE=none
-      - WATCHTOWER_SCHEDULE=0 0 8 * * 6,0
-      - WATCHTOWER_INCLUDE_STOPPED=true
-      - TZ=Europe/Brussels
+      - WUD_WATCHER_WEEKEND_CRON=0 0 8 * * 6,0
+      - WUD_WATCHER_WEEKEND_WATCHALL=true
+      - WUD_TRIGGER_DOCKER_ALL_AUTO=true
+      - WUD_TRIGGER_DOCKER_ALL_PRUNE=true
+      - WUD_TRIGGER_DOCKER_ALL_MODE=batch
 
 volumes:
   portainer_data:

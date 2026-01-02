@@ -7,6 +7,10 @@ services:
       - homeassistant_config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
+    deploy:
+      resources:
+        limits:
+          memory: 2gb
     ports:
       - "192.168.2.251:80:8123"
       - "6666:6666/udp"
@@ -51,7 +55,7 @@ services:
     restart: unless-stopped
     depends_on:
       - mosquitto
-      
+
   cloudflaretunnel:
     container_name: cloudflare-tunnel
     image: cloudflare/cloudflared
@@ -74,7 +78,7 @@ services:
     command: [ "--model", "tiny-int8", "--language", "nl" ]
 
   piper:
-    image: lscr.io/linuxserver/piper:latest
+    image: ghcr.io/linuxserver/piper:latest
     container_name: piper
     environment:
       - PUID=1000
@@ -115,9 +119,32 @@ services:
     volumes:
       - ./esp_home:/config
     network_mode: host
-    # ports:
-    #   - "6052:6052"
-    # reset: https://esphome.github.io/esp-web-tools/
+
+  frigate:
+    container_name: frigate
+    privileged: true # this may not be necessary for all setups
+    restart: unless-stopped
+    stop_grace_period: 30s # allow enough time to shut down the various services
+    image: ghcr.io/blakeblackshear/frigate:stable
+    shm_size: "512mb" # update for your cameras based on calculation above
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128 # For intel hwaccel, needs to be updated for your hardware
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./frigate/config:/config
+      - ./frigate/media:/media/frigate
+      - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    ports:
+      - "8971:8971"
+      - "6050:5000" # Internal unauthenticated access. Expose carefully.
+      - "8554:8554" # RTSP feeds
+      - "8555:8555/tcp" # WebRTC over tcp
+      - "8555:8555/udp" # WebRTC over udp
+    environment:
+      FRIGATE_RTSP_PASSWORD: "password"
 
 networks:
   default:

@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
 
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: ghcr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     network_mode: "container:gluetun"
     deploy:
@@ -35,7 +35,7 @@ services:
     restart: unless-stopped
 
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
+    image: ghcr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     network_mode: "container:gluetun"
     environment:
@@ -47,7 +47,7 @@ services:
     restart: unless-stopped
 
   radarr:
-    image: linuxserver/radarr
+    image: ghcr.io/linuxserver/radarr:latest
     container_name: radarr
     network_mode: "container:gluetun"
     environment:
@@ -63,7 +63,7 @@ services:
     restart: unless-stopped
 
   sonarr:
-    image: linuxserver/sonarr
+    image: ghcr.io/linuxserver/sonarr:latest
     container_name: sonarr
     network_mode: "container:gluetun"
     environment:
@@ -78,15 +78,21 @@ services:
       - prowlarr
     restart: unless-stopped
 
-  overseerr:
-    image: sctx/overseerr
-    container_name: overseerr
+  jellyseerr:
+    image: ghcr.io/fallenbagel/jellyseerr:latest
+    container_name: jellyseerr 
+    init: true 
     network_mode: "container:gluetun"
     environment:
       - TZ=Europe/Amsterdam
-      - PORT=5055
     volumes:
-      - overseerr_config:/app/config
+      - jellyseerr_config:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3  
     restart: unless-stopped
 
 volumes:
@@ -99,4 +105,5 @@ volumes:
   readarr_config:
   readarr_books:
   overseerr_config:
+  jellyseerr_config:
   sabnzbd_config:

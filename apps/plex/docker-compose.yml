@@ -37,8 +37,6 @@ services:
     restart: 'unless-stopped'
     environment:
       - JELLYFIN_PublishedServerUrl=http://jelly.local
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
     group_add:
       - "109"
     extra_hosts:
@@ -47,7 +45,6 @@ services:
 volumes:
   plex_config:
   plex_transcode:
-  kavita_config:
   jellyfin_config:
   jellyfin_cache:
 

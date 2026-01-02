@@ -29,17 +29,25 @@ services:
       - "192.168.2.244:80:8080"
     restart: unless-stopped
 
-  mcp-server:
-    container_name: mcpo_mcp-server
-    image: ghcr.io/open-webui/mcpo:main
-    restart: unless-stopped
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: searxng
     ports:
-      - 9005:8000
-    environment:
-      - TZ=Europe/Amsterdam
+      - "9006:8080"
     volumes:
-      - ./mcpo/config.json:/app/config.json:rw
-    command: ["--api-key", "xxx", "--config", "/app/config.json"]
+      - ./searxng/config/:/etc/searxng/
+      - ./searxng/data/:/var/cache/searxng/
+    restart: unless-stopped
+
+  mcp-searxng:
+    image: isokoliuk/mcp-searxng:latest
+    container_name: mcp-searxng
+    environment:
+      - SEARXNG_URL=http://192.168.2.21:9006
+      - MCP_HTTP_PORT=3000
+    ports:
+      - "9007:3000"
+    restart: unless-stopped
 
 volumes:
   open-webui:

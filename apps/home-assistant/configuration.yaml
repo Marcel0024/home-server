@@ -32,44 +32,37 @@ http:
   ip_ban_enabled: true
   login_attempts_threshold: 50
 
-light:
-  - platform: template
-    lights:
-      template_woonkamer_lampen:
-        friendly_name: "Template Woonkamer lampen"
-        level_template: >
-          {% set group = 'light.woonkamer_groep' %}
-          {{
-            expand(group) 
-              | selectattr('attributes.brightness', 'defined')
-              | selectattr('attributes.brightness')
-              | map(attribute='attributes.brightness')
-              | average(default=0)
-          }}
-        value_template: "{{ is_state('light.woonkamer_groep', 'on') }}"
-        turn_on:
-          - service: light.turn_on
-            target:
-              entity_id: light.woonkamer_groep
-        turn_off:
-          - service: light.turn_off
-            target:
-              entity_id: light.woonkamer_groep
-        set_level:
-          - variables:
-              group: light.woonkamer_groep
-              on_with_br: >
-                {{
-                  expand(group) 
-                    | selectattr('attributes.brightness', 'defined')
-                    | selectattr('attributes.brightness')
-                    | map(attribute='entity_id')
-                    | list
-                }}
-          - if: "{{ on_with_br | count > 0 or is_state(group, 'off') }}"
-            then:
-              - service: light.turn_on
-                target:
-                  entity_id: "{{ on_with_br or group }}"
-                data:
-                  brightness: "{{ brightness }}"
+template:
+  - light:
+    - turn_on:
+      - target:
+          entity_id:
+          - light.woonkamer_groep
+        action: light.turn_on
+      turn_off:
+      - target:
+          entity_id:
+          - light.woonkamer_groep
+        action: light.turn_off
+      set_level:
+      - variables:
+          group: light.woonkamer_groep
+          on_with_br: "{{\n  expand(group) \n    | selectattr('attributes.brightness',
+            'defined')\n    | selectattr('attributes.brightness')\n    | map(attribute='entity_id')\n
+            \   | list\n}}"
+      - if:
+        - value_template: '{{ on_with_br | count > 0 or is_state(group, ''off'') }}'
+          condition: template
+        then:
+        - target:
+            entity_id: '{{ on_with_br or group }}'
+          data:
+            brightness: '{{ brightness }}'
+          action: light.turn_on
+      default_entity_id: light.template_woonkamer_lampen
+      name: Template Woonkamer lampen
+      level: "{% set group = 'light.woonkamer_groep' %} {{\n  expand(group) \n    |
+        selectattr('attributes.brightness', 'defined')\n    | selectattr('attributes.brightness')\n
+        \   | map(attribute='attributes.brightness')\n    | average(default=0)\n}}"
+      state: '{{ is_state(''light.woonkamer_groep'', ''on'') }}'
+

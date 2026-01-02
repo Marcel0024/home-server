@@ -20,7 +20,7 @@ services:
   testwebserver:
     image: localhost:5000/marcel0024/testwebserver:latest
     container_name: testwebserver
-    labels: [ "com.centurylinklabs.watchtower.scope=local" ]
+    labels: [ "wud.watch=false" ]
     restart: unless-stopped
     ports:
       - 5100:8080

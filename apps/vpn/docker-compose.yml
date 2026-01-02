@@ -46,7 +46,7 @@ services:
       - "7878:7878"
       # sonarr
       - "8989:8989"
-      # overseerr
+      # jellyseerr
       - "192.168.2.250:80:5055"
 
 volumes:

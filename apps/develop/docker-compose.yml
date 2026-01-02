@@ -9,7 +9,7 @@ services:
       - docker-registry-data:/var/lib/registry
 
   gitea:
-    image: docker.gitea.com/gitea:latest
+    image: gitea/gitea:latest
     container_name: gitea
     environment:
       - USER_UID=1000

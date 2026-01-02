@@ -26,16 +26,18 @@ services:
       - 6789:6789 #optional
       - 5514:5514/udp #optional
     restart: unless-stopped
-
+    
   mongo:
     image: mongo:4.4.24
     restart: unless-stopped
+    container_name: unifi-mongo
     volumes:
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - mongo_db:/data/db
       - mondgo_configdb:/data/configdb
-    command: mongod --port 27017
-
+    command: 
+      mongod --port 27017
+      
 volumes:
   unify_config:
   mongo_db:
