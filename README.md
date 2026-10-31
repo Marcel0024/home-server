@@ -50,7 +50,7 @@ Pihole, Home Assistant, Overseerr & Glances needs to have their IP addresses set
 
 # Add extra IP addresses to Host
 
-We can add multiple addresses to our network interface. Make sure the router does not assign IP's above these IP's. Currently we have these hardcoded IP addresses:
+The host uses Netplan to keep additional static addresses on `eno1`, alongside its main DHCP address (currently `192.168.2.21`). Exclude `192.168.2.239` through `192.168.2.253` from the router's DHCP pool so they cannot be assigned to other devices. The gateway remains `192.168.2.254`.
 
 | IP            | App                 | Domain       |
 | ------------- | ------------------- | ------------ |
@@ -67,49 +67,84 @@ We can add multiple addresses to our network interface. Make sure the router doe
 You can add these local DNS records in pi-hole.
 
 
-### Adding the IP address
+### Configure persistent IP addresses
 
-We have to create a file that we can call on boot to always add these IP addresses.
+Declare these addresses in Netplan so they are restored after networking restarts and reboots. The previous `extra-ips.service` only added runtime addresses at boot. During the October 16, 2026 daily APT upgrade, `systemd-networkd` restarted and the extra addresses disappeared; rerunning the old service restored access. The Netplan setup below was also verified after a reboot.
 
-1. Create file `sudo nano ~/scripts/extra-ips.sh`
-
-```bash 
-#!/usr/bin/env bash
-ip addr add 192.168.2.253/24 dev eno1
-ip addr add 192.168.2.252/24 dev eno1
-ip addr add 192.168.2.251/24 dev eno1
-ip addr add 192.168.2.250/24 dev eno1
-ip addr add 192.168.2.249/24 dev eno1
-ip addr add 192.168.2.248/24 dev eno1
-ip addr add 192.168.2.247/24 dev eno1
-ip addr add 192.168.2.246/24 dev eno1
-ip addr add 192.168.2.245/24 dev eno1
-ip addr add 192.168.2.244/24 dev eno1
-ip addr add 192.168.2.243/24 dev eno1
-ip addr add 192.168.2.242/24 dev eno1
-```
-
-`sudo chmod +x ~/scripts/extra-ips.sh`
-
-1. Create file `sudo nano /etc/systemd/system/extra-ips.service`
+1. After Ubuntu installation, keep the existing Netplan files and back them up:
 
 ```bash
-#!/usr/bin/env bash
-[Unit]
-After=network.target
-
-[Service]
-ExecStart=~/scripts/extra-ips.sh          # REPLACE ~ WITH REAL PATH 
-
-[Install]
-WantedBy=default.target
+sudo cp -a /etc/netplan "/root/netplan-backup-$(date +%Y%m%d-%H%M%S)"
+sudo netplan get ethernets
 ```
 
-Enable the service with `sudo systemctl enable extra-ips`
-Debug with `sudo systemctl status extra-ips`
+Confirm that the LAN interface is `eno1`. The configuration below keeps DHCP enabled on that interface and adds all 15 addresses used by the existing host setup. Existing settings for other interfaces remain in their original files.
 
+2. Create `/etc/netplan/90-service-addresses.yaml` with restricted permissions. On an existing installation, inspect any file already at this path before replacing it.
 
-Then `sudo reboot`
+```bash
+sudo install -m 600 /dev/null /etc/netplan/90-service-addresses.yaml
+sudo tee /etc/netplan/90-service-addresses.yaml >/dev/null <<'EOF'
+network:
+  version: 2
+  ethernets:
+    eno1:
+      dhcp4: true
+      addresses:
+        - 192.168.2.253/24
+        - 192.168.2.252/24
+        - 192.168.2.251/24
+        - 192.168.2.250/24
+        - 192.168.2.249/24
+        - 192.168.2.248/24
+        - 192.168.2.247/24
+        - 192.168.2.246/24
+        - 192.168.2.245/24
+        - 192.168.2.244/24
+        - 192.168.2.243/24
+        - 192.168.2.242/24
+        - 192.168.2.241/24
+        - 192.168.2.240/24
+        - 192.168.2.239/24
+EOF
+sudo chmod 600 /etc/netplan/*.yaml
+```
+
+3. Validate the combined configuration before applying it:
+
+```bash
+sudo netplan generate
+sudo netplan get ethernets.eno1
+```
+
+The output should contain `dhcp4: true` and all 15 addresses above. Resolve any validation errors before continuing.
+
+4. Apply with a three-minute confirmation window:
+
+```bash
+sudo netplan try --timeout 180
+```
+
+Keep the terminal open. Use a second connection to check SSH access and run `ip -4 -br addr show eno1` to confirm the addresses. Press Enter at the confirmation prompt if the checks pass. If connectivity fails, leave it unconfirmed so Netplan can attempt rollback after the timeout. Verify the actual configuration after a rollback before making further changes or rebooting.
+
+5. After the Pi-hole and proxy containers are running, verify DNS and proxy access:
+
+```bash
+ip -4 -br addr show eno1
+dig @192.168.2.253 example.com A +short +time=3 +tries=1
+curl -sS --max-time 10 -o /dev/null -w 'HTTP %{http_code}\n' http://192.168.2.245:81/
+```
+
+Expect all 15 static addresses plus the DHCP address, a DNS answer, and HTTP 200 from the Nginx Proxy Manager login page. Also check access from another LAN device. Run these service checks after starting the containers when rebuilding from scratch.
+
+6. When migrating an existing installation that has `extra-ips.service`, disable it after the checks pass:
+
+```bash
+sudo systemctl disable extra-ips.service
+systemctl is-enabled extra-ips.service
+```
+
+The final command should print `disabled` (its nonzero exit status is expected). Keep the old script and unit as fallback files; Netplan now manages the addresses. On a fresh installation, do not create or enable the old service. A reboot is not required to apply the configuration; after any later reboot, repeat the address and service checks above.
 
 
 # Media
@@ -163,7 +198,7 @@ Recursive add user to folders: `sudo chown -R 1001:1001 /dont/do/this`
 
 `nslookup example.com`
 
-`nslookup example.com 192.168.2.243`
+`nslookup example.com 192.168.2.253`
 
 
 Find eth interface: (eno1) `ifconfig` the ip that's the ip of the machine is the eth that should be used.
